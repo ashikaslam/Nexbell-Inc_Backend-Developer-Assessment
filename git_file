@@ -1,0 +1,14 @@
+
+
+echo "# Nexbell-Inc_Backend-Developer-Assessment" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/ashikaslam/Nexbell-Inc_Backend-Developer-Assessment.git
+git push -u origin main
+
+
+git remote add origin https://github.com/ashikaslam/Nexbell-Inc_Backend-Developer-Assessment.git
+git branch -M main
+git push -u origin main
