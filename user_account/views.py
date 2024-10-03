@@ -38,6 +38,7 @@ class UserSignupView(APIView):  # 3
             token1 = Utility_function.generate_token()
             token2 = Utility_function.generate_token()
             email = serializer.validated_data['email']
+           
             Email_varification_obj = models.Email_varification.objects.create(
                 email=email, otp=otp, token1=token1, token2=token2
 
@@ -148,3 +149,25 @@ class Logout(APIView):  # 8
         return Response(serializer.errors)
 
 
+
+
+
+class PasswordChangeView(APIView):  # 5
+    authentication_classes = [JWTAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.PasswordChangeSerializer
+    def post(self, request, *args, **kwargs):
+        try:
+           
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = request.user
+            current_password = serializer.validated_data['current_password']
+            new_password1 = serializer.validated_data['new_password']
+            if not user.check_password(current_password):
+                return Response({'error': 'Current password is not correct'}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_password(new_password1)
+            user.save()
+            return Response({'message': 'Password changed successfully'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

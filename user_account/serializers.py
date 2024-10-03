@@ -37,3 +37,11 @@ class otp_taker(serializers.Serializer):  # 2
     otp = serializers.IntegerField()
     token1 =serializers.CharField()
     token2 =serializers.CharField()
+    
+    
+
+# passwrod change with current password
+
+class PasswordChangeSerializer(serializers.Serializer):  # 5
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
