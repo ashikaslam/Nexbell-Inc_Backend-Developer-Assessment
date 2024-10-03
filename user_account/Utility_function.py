@@ -22,7 +22,7 @@ import string
 def send_link_for_pass_set(email,link):
     try:
         email_id = email
-        email_subject = "Reste your password!!!"
+        email_subject = "Reset your password!!!"
         email_body = render_to_string('pass_set.html', {'link' : link})
         email = EmailMultiAlternatives(email_subject , '', to=[email_id])
         email.attach_alternative(email_body, "text/html")

@@ -54,9 +54,6 @@ def upload_image_to_imgbb(file):
 
 
 
-
-@csrf_exempt
-
 class PhoneAPIView(APIView):  
     authentication_classes = [JWTAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
