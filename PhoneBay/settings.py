@@ -32,7 +32,16 @@ SECRET_KEY = os.getenv('project_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+
+ALLOWED_HOSTS = [
+    'localhost',  
+    'phonebay.onrender.com',  
+]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://phonebay.onrender.com',  
+]
 
 
 # Application definition
@@ -79,6 +88,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+
 CORS_ORIGIN_ALLOW_ALL = True
 ROOT_URLCONF = 'PhoneBay.urls'
 

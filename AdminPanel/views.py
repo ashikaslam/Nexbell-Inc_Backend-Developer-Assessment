@@ -21,8 +21,10 @@ import requests
 # product manage ment.................................
 import os
 from dotenv import load_dotenv
-
+from django.views.decorators.csrf import csrf_exempt
 load_dotenv()
+
+
 
 
 
@@ -53,6 +55,7 @@ def upload_image_to_imgbb(file):
 
 
 
+@csrf_exempt
 
 class PhoneAPIView(APIView):  
     authentication_classes = [JWTAuthentication, SessionAuthentication]
