@@ -19,13 +19,16 @@ import requests
 
 
 # product manage ment.................................
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 
 
 def upload_image_to_imgbb(file):
     try:
-        api_key = "01d4e13ce09166077b3f74004ee91206"
+        api_key =os.getenv('imagebb_api_key')
         api_url = f"https://api.imgbb.com/1/upload?key={api_key}"
 
         # Prepare the file for the request (ensure it is read as binary data)
