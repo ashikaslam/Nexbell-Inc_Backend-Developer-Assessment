@@ -33,6 +33,7 @@ class GetPhoneAPIView(APIView):  # filter
     def get(self,request,brand,hp,lp):
         print('brand',brand,'hp',hp,'lp',lp)
         all_obj = Phone.objects.filter().order_by('-price')
+        
         if brand!='any':all_obj = all_obj.filter(brand=brand)
         if hp!='any':
              hp=int(hp)
@@ -40,12 +41,16 @@ class GetPhoneAPIView(APIView):  # filter
         if lp!='any':
             lp=int(lp)
             all_obj = all_obj.filter(price__gte=lp)
-         # Pagination
+        user_id=0
+        
+        if request.user:user_id=request.user.id
+        
         paginator = PhonePagination()
         result_page = paginator.paginate_queryset(all_obj, request)
-        serializer = PhoneSerializer(result_page, many=True,status=status.HTTP_200_OK)
-
+        serializer = PhoneSerializer(result_page, many=True,context={'user_id': user_id})
         return paginator.get_paginated_response(serializer.data)
+        
+
 
 class GetALLPhoneAPIView(APIView):  # filter
     authentication_classes = [JWTAuthentication, SessionAuthentication]

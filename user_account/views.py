@@ -79,13 +79,11 @@ class Varifi_otp_(APIView):  # 2
                 user.is_active = True
                 user.save()
                 Refresh = RefreshToken.for_user(user)
-                profile=user.profile
+               
                 # this line not for production just for testing
                 login(request,  user)
                 return Response({'message': 'registration successful.', 
                                  'user_id':  user.id, 
-                                 "profile_id":profile.id,
-                                 "profile_picture": profile.profile_picture,
                                  "access": str(Refresh.access_token), 
                                  "status": 1,
                                  'refresh': str(Refresh)
@@ -215,10 +213,9 @@ class RequestPasswordReset(APIView):  # 6
 
 
 class ResetPassword(APIView):  # 7
-    serializer_class = serializers.ResetPasswordSerializer
     permission_classes = [AllowAny]
-
-    def get(self, request, token):
+    serializer_class = serializers.ResetPasswordSerializer
+    def post(self, request, token):
         try:
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
