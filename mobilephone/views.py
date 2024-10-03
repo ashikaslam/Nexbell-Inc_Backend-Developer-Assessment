@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import authenticate
 
-#from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
@@ -49,40 +49,14 @@ class GetPhoneAPIView(APIView):  # filter
 
 class GetALLPhoneAPIView(APIView):  # filter
     authentication_classes = [JWTAuthentication, SessionAuthentication]
-
     def get(self, request):
-        # Get all phones and order them by price (ascending order)
+        user_id=0
+        if request.user:user_id=request.user.id
         all_obj = Phone.objects.all().order_by('-price')
-        
-        # Initialize the paginator
         paginator = PhonePagination()
-        
-        # Paginate the query set
         result_page = paginator.paginate_queryset(all_obj, request)
-        
-        # Serialize the paginated data
-        serializer = PhoneSerializer(result_page, many=True)
-        
-        # Return the paginated response
+        serializer = PhoneSerializer(result_page, many=True,context={'user_id': user_id})
         return paginator.get_paginated_response(serializer.data)
-
-
-
-
-# class GetPhoneWithIdAPIView(APIView):  # phone by id
-#     authentication_classes = [JWTAuthentication, SessionAuthentication]
-#     def get(self,request,id):
-#         try:
-#             user_id=0
-#             if request.user:user_id=request.user.id
-#             all_obj = Phone.objects.get(id=id)
-#             serializer = PhoneSerializer(all_obj,many=False,context={'user_id': user_id})
-           
-#             return Response({'phone':serializer.data})
-#         except Exception as e:
-#             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-
 
 
 
@@ -109,8 +83,10 @@ class latest_phone(APIView):
     authentication_classes = [JWTAuthentication, SessionAuthentication]
     def get(self,request):
         try:
+            user_id=0
+            if request.user:user_id=request.user.id
             all_obj = Phone.objects.filter().order_by('-date_created')[:8]
-            serializer = PhoneSerializer(all_obj,many=True)
+            serializer = PhoneSerializer(all_obj,many=True,context={'user_id': user_id})
             return Response({'all_phones':serializer.data})
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -178,15 +154,6 @@ class PhoneSearchView(APIView):
             phone_serializer = PhoneSerializer(phones, many=True,context={'user_id': user_id})
             cache.set(cache_key, phone_serializer.data, CACHE_TTL)
             return Response({'all_phones': phone_serializer.data})
-
-
-            # # Try setting a value in the cache
-            # cache.set('monir', 'akalu_aslma', CACHE_TTL)
-
-            # # Try retrieving the value from the cache
-            # value = cache.get('monir')
-            # print(value)  
-            # return Response({'all_phones': 200})
         
          except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

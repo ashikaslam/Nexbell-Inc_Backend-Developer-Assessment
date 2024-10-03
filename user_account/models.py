@@ -72,3 +72,14 @@ class Email_varification(models.Model):
         return (now - self.created_at) < datetime.timedelta(minutes=10)
     
     
+
+class PasswordReset(models.Model):
+    email = models.EmailField()
+    token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def is_link_valid(self):
+        now = timezone.now()
+        return (now - self.created_at) < datetime.timedelta(minutes=10)
+    
+    

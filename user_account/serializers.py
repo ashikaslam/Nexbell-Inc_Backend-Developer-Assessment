@@ -45,3 +45,13 @@ class otp_taker(serializers.Serializer):  # 2
 class PasswordChangeSerializer(serializers.Serializer):  # 5
     current_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+    
+    
+
+class ResetPasswordRequestSerializer(serializers.Serializer):  # 6
+    email = serializers.EmailField(required=True)
+
+
+#
+class ResetPasswordSerializer(serializers.Serializer):  # 7
+    new_password = serializers.CharField(write_only=True, required=True)

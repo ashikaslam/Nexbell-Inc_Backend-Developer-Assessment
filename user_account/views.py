@@ -15,8 +15,7 @@ from rest_framework.response import Response
 from .import serializers
 from . import models
 from cart.models import Cart
-#from . import Utility_function
-#from extra_fruction import problem_solver
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 
 from django.contrib.auth import authenticate, login, logout
@@ -171,3 +170,72 @@ class PasswordChangeView(APIView):  # 5
             return Response({'message': 'Password changed successfully'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+# now if someone forget his password then we will use this code of bellow>>>>>>
+
+class RequestPasswordReset(APIView):  # 6
+    permission_classes = [AllowAny]
+    serializer_class = serializers.ResetPasswordRequestSerializer
+
+    def post(self, request):
+        try:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            email = request.data['email']
+            user = User.objects.filter(email__iexact=email).first()
+            if user. is_active==False:
+                user.delete()
+                return Response({"error": "User with this email not found"}, status=status.HTTP_404_NOT_FOUND)
+                
+            if user:
+                token_generator = PasswordResetTokenGenerator()
+                token = token_generator.make_token(user)
+                reset_obj = models.PasswordReset(email=email, token=token)
+                reset_obj.save()
+                
+                reset_url = f"http://127.0.0.1:8000/auth/reset-password/{token}/"
+                #reset_url = f"https://phonebay.onrender.com/auth/reset-password/{token}/"
+                
+                print(reset_url)
+                link_send = Utility_function.send_link_for_pass_set(
+                    email, reset_url)
+                if not link_send:
+                    return Response({"error": "we could not send link to your email", "status": 0}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "we sent a link  your email", "status": 1}, status=status.HTTP_200_OK)
+            return Response({"error": "User with this email not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+  
+
+
+class ResetPassword(APIView):  # 7
+    serializer_class = serializers.ResetPasswordSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request, token):
+        try:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.validated_data
+            new_password = data['new_password']
+            reset_obj = models.PasswordReset.objects.filter(
+                token=token).first()
+            if not reset_obj:
+                return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            user = User.objects.filter(email=reset_obj.email).first()
+            if user:
+                user.set_password(new_password)
+                user.save()
+                reset_obj.delete()
+                return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'No user found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      
