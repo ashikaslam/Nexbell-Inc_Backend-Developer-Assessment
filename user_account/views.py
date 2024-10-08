@@ -195,8 +195,8 @@ class RequestPasswordReset(APIView):  # 6
                 reset_obj = models.PasswordReset(email=email, token=token)
                 reset_obj.save()
                 
-                reset_url = f"http://127.0.0.1:8000/auth/reset-password/{token}/"
-                #reset_url = f"https://phonebay.onrender.com/auth/reset-password/{token}/"
+                #reset_url = f"http://127.0.0.1:8000/auth/reset-password/{token}/"
+                reset_url = f"https://phonebay.onrender.com/auth/reset-password/{token}/"
                 
                 print(reset_url)
                 link_send = Utility_function.send_link_for_pass_set(
